@@ -137,8 +137,9 @@ export default function App() {
   // Precompute positions on a circle
   const positions = useMemo<Vec3[]>(() => {
     const radius = 3;
+    const yOffset = 1.5; // Raise the eggs vertically
     const step = (2 * Math.PI) / eggData.length;
-    return eggData.map((_, i) => [radius * Math.cos(i * step), 0, radius * Math.sin(i * step)]);
+    return eggData.map((_, i) => [radius * Math.cos(i * step), yOffset, radius * Math.sin(i * step)]);
   }, []);
 
   const handleCrack = (i: number) => {
