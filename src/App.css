@@ -2,6 +2,19 @@
 /* Easter-themed fonts */
 @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Comic+Neue:wght@700&display=swap');
 
+/* General Styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f0e1; /* Match canvas background */
+  color: #333;
+  overflow: hidden; /* Prevent body scroll */
+}
+
 .App {
   text-align: center;
 }
@@ -41,11 +54,12 @@
   }
 }
 
+/* Container for the canvas and UI elements */
 .canvas-container {
   width: 100vw;
-  height: 100vh;
-  position: relative;
-  overflow: visible;
+  height: 100vh; /* Full viewport height */
+  position: relative; /* Needed for absolute positioning of children */
+  overflow: hidden; /* Prevent internal scroll */
 }
 
 .task-overlay {
@@ -66,69 +80,91 @@
   color: #333;
 }
 
-.bottom-drawer {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%) translateY(100%);
-  width: 90%;
-  max-width: 500px;
-  background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);
-  border: 2px dashed #ffffff;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 -6px 12px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.4s ease-out forwards;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-@keyframes slideUp {
-  from { transform: translateX(-50%) translateY(100%); }
-  to   { transform: translateX(-50%) translateY(0); }
-}
-
-.bottom-drawer h3 {
-  margin: 0;
-  font-size: 1.8rem;
-  font-family: 'Lobster', cursive;
-  color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-}
-
-.bottom-drawer p {
-  margin: 0.5rem 0 0;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1.4rem;
-  font-weight: 500;
-  color: #222;
-  line-height: 1.6;
-  text-align: center;
-}
-
 /* Persistent game title */
 .game-title {
   position: absolute;
-  top: 2rem;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'Lobster', cursive;
-  font-size: 3.5rem;
-  color: transparent;
-  background-image: linear-gradient(45deg, #FF9A9E 0%, #FAD0C4 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 8px rgba(255,255,255,0.7), 0 2px 4px rgba(0,0,0,0.4);
-  transition: text-shadow 0.3s ease;
-  z-index: 10;
+  font-family: 'Lobster', cursive; /* Change font */
+  font-size: 2em; /* Default font size */
+  color: rgba(0, 0, 0, 0.7);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Add shadow */
+  z-index: 10; /* Ensure it's above the canvas */
   text-align: center;
+  pointer-events: none; /* Allow clicks to pass through */
+  white-space: nowrap; /* Prevent wrapping */
 }
 
-.game-title:hover {
-  text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 4px 8px rgba(0,0,0,0.6);
+/* Bottom drawer for selected egg task */
+.bottom-drawer {
+  position: fixed; /* Fixed to viewport */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 25px; /* Increased padding */
+  color: white;
+  font-size: 1.25em; /* Increased base font size */
+  z-index: 20; /* Ensure it's above title and canvas */
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.25); /* Enhanced shadow */
+  transition: background-color 0.3s ease; /* Smooth color transition */
+  /* Add a semi-transparent overlay to tone down the background */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+}
+
+.bottom-drawer p {
+  margin: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7); /* Stronger text shadow */
+}
+
+.bottom-drawer .story {
+  font-size: 1.1em; /* Increased */
+  margin-bottom: 12px; /* Adjusted space */
+  font-style: italic; /* Distinguish the story */
+  opacity: 0.9; /* Slightly less emphasis than task */
+}
+
+.bottom-drawer .task {
+  font-size: 1.2em; /* Increased */
+  font-weight: bold; /* Make task stand out */
+}
+
+.bottom-drawer .task strong {
+  /* Style the "Užduotis:" label if needed, but font-weight bold is already applied */
+  margin-right: 5px;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .game-title {
+    font-size: 1.5em; /* Reduce title font size */
+    top: 15px;
+  }
+
+  .bottom-drawer {
+    padding: 15px 20px; /* Adjust padding for tablets */
+    font-size: 1.15em; /* Increased */
+  }
+}
+
+@media (max-width: 480px) {
+  .game-title {
+    font-size: 1.2em; /* Further reduce title font size */
+    top: 10px;
+    width: 90%; /* Allow wrapping if really needed */
+    white-space: normal;
+  }
+
+  .bottom-drawer {
+    padding: 12px 15px; /* Adjust padding for phones */
+  }
+
+  .bottom-drawer .story {
+    font-size: 1em; /* Increased */
+    margin-bottom: 10px; /* Adjusted */
+  }
+
+  .bottom-drawer .task {
+    font-size: 1.1em; /* Increased */
+  }
 }

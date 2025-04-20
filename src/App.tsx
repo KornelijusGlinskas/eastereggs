@@ -6,13 +6,48 @@ import './App.css';
 
 // Egg definitions: color and Lithuanian task
 const eggData = [
-  { color: '#DAA520', title: 'Auksinis kiaušinis', task: 'Nupiešk Donaldą Trumpą' },
-  { color: '#FF69B4', title: 'Rožinis kiaušinis', task: 'Nupiešk šaltibarščių dubenėlį su kiaušiniu.' },
-  { color: '#9370DB', title: 'Violetinis kiaušinis', task: 'Nupiešk Gedimino pilį su Lietuvos vėliava.' },
-  { color: '#FF8C00', title: 'Oranžinis kiaušinis', task: 'Nupiešk Joninių laužą.' },
-  { color: '#20B2AA', title: 'Žalsvas kiaušinis', task: 'Nupiešk stilizuotą eglutę iš miško.' },
-  { color: '#FFD700', title: 'Geltonas kiaušinis', task: 'Nupiešk kaip "Gaidelio" sausainį.' },
-  { color: '#DC143C', title: 'Raudonas kiaušinis', task: 'Nupiešk tradicinį lietuvišką margučio raštą.' },
+  {
+    color: '#DAA520',
+    title: 'Auksinis kiaušinis',
+    story: 'Legenda sako, kad šis auksinis kiaušinis padovanoja laimę ir greitį tam, kuris geriausiai nupieš Donaldą Trumpą ir jį sudaužys',
+    task: 'Nupiešk Donaldą Trumpą'
+  },
+  {
+    color: '#FF69B4',
+    title: 'Rožinis kiaušinis',
+    story: 'Šis kiaušinis buvo netyčia pamirkytas į šaltibarščių puodą, todėl gavo rožinę spalvą ir gardų skonį.',
+    task: 'Nupiešk šaltibarščių dubenėlį su kiaušiniu viduryje.'
+  },
+  {
+    color: '#7CFC00',
+    title: 'Žalias kiaušinis',
+    story: 'Žalias kiaušinis simbolizuoja bundančią gamtą ir pirmąsias pavasario žoles.',
+    task: 'Nupiešk stilizuotą žolynais apaugusią Velykų zuikio slėptuvę.'
+  },
+  {
+    color: '#1E90FF',
+    title: 'Mėlynas kiaušinis',
+    story: 'Mėlynas kiaušinis įkūnija pavasario lietų, kuris pažadina gamtą po žiemos miego.',
+    task: 'Nupiešk lietaus lašelius ir skėtį su lietuviškais raštais.'
+  },
+  {
+    color: '#FFD700',
+    title: 'Geltonas kiaušinis',
+    story: 'Geltonas kiaušinis visiems primena vaikystės skonį – traškius ir gardžius "Gaidelio" sausainius.',
+    task: 'Nupiešk kiaušinį kaip "Gaidelio" sausainį su snapeliu ir sparnais.'
+  },
+  {
+    color: '#FF4500',
+    title: 'Raudonas kiaušinis',
+    story: 'Raudonas kiaušinis atneša energiją ir aistrą pavasario šventėms, kurių metu varžomasi margučių lenktynėse.',
+    task: 'Nupiešk tradicinį lietuvišką margučio raštą, kuris simbolizuotų greitį ir judėjimą.'
+  },
+  {
+    color: '#8A2BE2',
+    title: 'Purpurinis kiaušinis',
+    story: 'Purpurinis kiaušinis yra pavasario paslapties ir stebuklų simbolis, kuris įkvėps tavo margutį riedėti greičiau.',
+    task: 'Nupiešk magišką pavasarinę gėlę, kuri išsiskleidžia tik per Velykas.'
+  },
 ];
 
 
@@ -181,7 +216,8 @@ export default function App() {
           className="bottom-drawer"
           style={{ background: eggData[selectedEgg].color }}
         >
-          <p>{eggData[selectedEgg].task}</p>
+          <p className="story">{eggData[selectedEgg].story}</p>
+          <p className="task"><strong>Užduotis:</strong> {eggData[selectedEgg].task}</p>
         </div>
       )}
     </div>
