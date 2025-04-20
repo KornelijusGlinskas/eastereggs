@@ -6,12 +6,12 @@ import './App.css';
 
 // Egg definitions: color and Lithuanian task
 const eggData = [
-  { color: '#DAA520', title: 'Auksinis kiaušinis', task: 'Nupiešk Donaldą Trumpą su šukuosena.' },
+  { color: '#DAA520', title: 'Auksinis kiaušinis', task: 'Nupiešk Donaldą Trumpą' },
   { color: '#FF69B4', title: 'Rožinis kiaušinis', task: 'Nupiešk šaltibarščių dubenėlį su kiaušiniu.' },
   { color: '#9370DB', title: 'Violetinis kiaušinis', task: 'Nupiešk Gedimino pilį su Lietuvos vėliava.' },
   { color: '#FF8C00', title: 'Oranžinis kiaušinis', task: 'Nupiešk Joninių laužą.' },
   { color: '#20B2AA', title: 'Žalsvas kiaušinis', task: 'Nupiešk stilizuotą eglutę iš miško.' },
-  { color: '#FFD700', title: 'Geltonas kiaušinis', task: 'Nupiešk šypsenėlę kaip „Gaidelio“ sausainio.' },
+  { color: '#FFD700', title: 'Geltonas kiaušinis', task: 'Nupiešk kaip "Gaidelio" sausainį.' },
   { color: '#DC143C', title: 'Raudonas kiaušinis', task: 'Nupiešk tradicinį lietuvišką margučio raštą.' },
 ];
 
@@ -47,7 +47,13 @@ function Egg({ color, position, onCrack, isSelected }: { color: string; position
       castShadow
     >
       <sphereGeometry args={[0.8, 32, 32]} />
-      <meshStandardMaterial color={color} />
+      <meshStandardMaterial
+        color={color}
+        metalness={isSelected ? 0.9 : 0.5}
+        roughness={isSelected ? 0.1 : 0.5}
+        emissive={new THREE.Color(color)}
+        emissiveIntensity={isSelected ? 1.2 : 0.4}
+      />
     </mesh>
   );
 }
@@ -171,7 +177,10 @@ export default function App() {
       </Canvas>
       {/* Bottom drawer for selected egg */}
       {selectedEgg !== null && (
-        <div className="bottom-drawer">
+        <div
+          className="bottom-drawer"
+          style={{ background: eggData[selectedEgg].color }}
+        >
           <p>{eggData[selectedEgg].task}</p>
         </div>
       )}
