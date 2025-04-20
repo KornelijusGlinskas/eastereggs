@@ -6,14 +6,15 @@ import './App.css';
 
 // Egg definitions: color and Lithuanian task
 const eggData = [
-  { color: '#DAA520', title: 'Auksinis kiaušinis', task: 'Trump' },
-  { color: '#FF69B4', title: 'Rožinis kiaušinis', task: 'Šaltibarščiai' },
-  { color: '#9370DB', title: 'Violetinis kiaušinis', task: 'Nupiešk pavasario gėlę' },
-  { color: '#FF8C00', title: 'Oranžinis kiaušinis', task: 'Nupiešk zuikį' },
-  { color: '#20B2AA', title: 'Žalsvas kiaušinis', task: 'Nupiešk drugelį' },
-  { color: '#FFD700', title: 'Geltonas kiaušinis', task: 'Nupiešk margutį' },
-  { color: '#DC143C', title: 'Raudonas kiaušinis', task: 'Nupiešk saulutę' },
+  { color: '#DAA520', title: 'Auksinis kiaušinis', task: 'Nupiešk Donaldą Trumpą su šukuosena.' },
+  { color: '#FF69B4', title: 'Rožinis kiaušinis', task: 'Nupiešk šaltibarščių dubenėlį su kiaušiniu.' },
+  { color: '#9370DB', title: 'Violetinis kiaušinis', task: 'Nupiešk Gedimino pilį su Lietuvos vėliava.' },
+  { color: '#FF8C00', title: 'Oranžinis kiaušinis', task: 'Nupiešk Joninių laužą.' },
+  { color: '#20B2AA', title: 'Žalsvas kiaušinis', task: 'Nupiešk stilizuotą eglutę iš miško.' },
+  { color: '#FFD700', title: 'Geltonas kiaušinis', task: 'Nupiešk šypsenėlę kaip „Gaidelio“ sausainio.' },
+  { color: '#DC143C', title: 'Raudonas kiaušinis', task: 'Nupiešk tradicinį lietuvišką margučio raštą.' },
 ];
+
 
 type Vec3 = [number, number, number];
 
