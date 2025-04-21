@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect, SetStateAction, Dispatch } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows } from '@react-three/drei';
@@ -7,51 +7,58 @@ import './App.css';
 // Egg definitions: color and Lithuanian task
 const eggData = [
   {
-    color: '#DAA520',
+    color: '#FFB300',
     title: 'Auksinis kiaušinis',
-    story: 'Legenda sako, kad šis auksinis kiaušinis padovanoja laimę ir greitį tam, kuris geriausiai nupieš Donaldą Trumpą ir jį sudaužys',
-    task: 'Nupiešk Donaldą Trumpą'
+    story: 'Auksinis kiaušinis glūdi Sauliaus Steponavičiaus lobynuose ir spinduliuoja amžino pavasario džiaugsmą.',
+    task: 'Nupiešk paprastą kryžių.'
   },
   {
-    color: '#FF69B4',
+    color: '#FFC0CB',
     title: 'Rožinis kiaušinis',
-    story: 'Šis kiaušinis buvo netyčia pamirkytas į šaltibarščių puodą, todėl gavo rožinę spalvą ir gardų skonį.',
-    task: 'Nupiešk šaltibarščių dubenėlį su kiaušiniu viduryje.'
+    story: 'Rožinio aušros spalva primena Kernavės piliakalnių ramybę ir senolių dainas.',
+    task: 'Nupiešk piliakalnį.'
   },
   {
-    color: '#7CFC00',
+    color: '#228B22',
     title: 'Žalias kiaušinis',
-    story: 'Žalias kiaušinis simbolizuoja bundančią gamtą ir pirmąsias pavasario žoles.',
-    task: 'Nupiešk stilizuotą žolynais apaugusią Velykų zuikio slėptuvę.'
+    story: 'Žalias kiaušinis alsuoja Dzūkijos pušynų vėsa ir miško paslaptimis po pavasario lietaus.',
+    task: 'Nupiešk medžio šaką.'
   },
   {
-    color: '#1E90FF',
+    color: '#87CEEB',
     title: 'Mėlynas kiaušinis',
-    story: 'Mėlynas kiaušinis įkūnija pavasario lietų, kuris pažadina gamtą po žiemos miego.',
-    task: 'Nupiešk lietaus lašelius ir skėtį su lietuviškais raštais.'
+    story: 'Mėlynas kiaušinis primena Baltijos jūros bangas ir vėjo šnarėjimą prie Kuršių nerijos.',
+    task: 'Nupiešk laivelį.'
   },
   {
     color: '#FFD700',
     title: 'Geltonas kiaušinis',
-    story: 'Geltonas kiaušinis visiems primena vaikystės skonį – traškius ir gardžius "Gaidelio" sausainius.',
-    task: 'Nupiešk kiaušinį kaip "Gaidelio" sausainį su snapeliu ir sparnais.'
+    story: 'Geltonas kiaušinis šviečia kaip saulė virš vienkiemio laukuose ir skleidžia derliaus pažadą.',
+    task: 'Nupiešk laukuose šviečiančią saulę.'
   },
   {
-    color: '#FF4500',
+    color: '#8B0000',
     title: 'Raudonas kiaušinis',
-    story: 'Raudonas kiaušinis atneša energiją ir aistrą pavasario šventėms, kurių metu varžomasi margučių lenktynėse.',
-    task: 'Nupiešk tradicinį lietuvišką margučio raštą, kuris simbolizuotų greitį ir judėjimą.'
+    story: 'Raudonas kiaušinis alsuoja Trakų pilies drąsa ir karališkųjų puotų aistromis.',
+    task: 'Nupiešk pilį.'
   },
   {
-    color: '#8A2BE2',
+    color: '#9370DB',
     title: 'Purpurinis kiaušinis',
-    story: 'Purpurinis kiaušinis yra pavasario paslapties ir stebuklų simbolis, kuris įkvėps tavo margutį riedėti greičiau.',
-    task: 'Nupiešk magišką pavasarinę gėlę, kuri išsiskleidžia tik per Velykas.'
+    story: 'Purpurinis kiaušinis slepia Jogailos dinastijos magiją ir karališką karūną.',
+    task: 'Nupiešk karūną.'
   },
+  {
+    color: '#000000',
+    title: 'Juodas kiaušinis',
+    story: 'Juodas kiaušinis atspindi vidurnakčio dangų virš Šatrijos kalno su žvaigždžių legendomis.',
+    task: 'Nupiešk kalną naktį.'
+  }
 ];
 
 
 type Vec3 = [number, number, number];
+type EggDataType = typeof eggData[0]; // Define a type for egg data structure
 
 // Single egg component
 function Egg({ color, position, onCrack, isSelected }: { color: string; position: Vec3; onCrack: () => void; isSelected: boolean }) {
@@ -62,7 +69,7 @@ function Egg({ color, position, onCrack, isSelected }: { color: string; position
     mesh.current.rotation.y += 0.02;
     // smooth raise or lower selected egg
     const baseY = position[1];
-    const targetY = isSelected ? baseY + 1 : baseY;
+    const targetY = isSelected ? baseY + 0.5 : baseY;
     mesh.current.position.y = THREE.MathUtils.lerp(mesh.current.position.y, targetY, 0.1);
     // smooth scale based on state
     const targetScale = isSelected ? 1.2 : hovered ? 1.1 : 1;
@@ -115,13 +122,103 @@ function Droplet({ position }: { position: Vec3 }) {
   );
 }
 
+// New component to handle the 3D scene elements and interactions
+function EggScene({
+  positions,
+  dropped,
+  setDropped,
+  selectedEgg,
+  setSelectedEgg
+}: {
+  positions: Vec3[];
+  dropped: number[];
+  setDropped: Dispatch<SetStateAction<number[]>>;
+  selectedEgg: number | null;
+  setSelectedEgg: Dispatch<SetStateAction<number | null>>;
+}) {
+  const { camera } = useThree();
+
+  const handleCrack = (i: number) => {
+    // Calculate camera angle in XZ plane
+    const cameraAngle = Math.atan2(camera.position.z, camera.position.x);
+    
+    // Calculate egg angle in XZ plane
+    const eggAngle = i * (2 * Math.PI) / eggData.length;
+
+    // Calculate the difference in angles
+    let angleDiff = eggAngle - cameraAngle;
+
+    // Normalize the angle difference to be between -PI and PI
+    angleDiff = Math.atan2(Math.sin(angleDiff), Math.cos(angleDiff));
+
+    // Define the threshold angle (e.g., +/- 72 degrees or PI / 2.5)
+    const thresholdAngle = Math.PI / 2.5; 
+
+    // Only proceed if the egg is within the threshold angle (in front)
+    if (Math.abs(angleDiff) < thresholdAngle) {
+      // drop egg once
+      if (!dropped.includes(i)) {
+        setDropped(prev => [...prev, i]);
+      }
+      // show selection drawer
+      setSelectedEgg(i);
+      // NOTE: Timeout logic removed here
+    } else {
+      console.log(`Egg ${i} is behind, not selecting.`);
+      // Optionally provide feedback or do nothing
+    }
+  };
+
+  return (
+    <>
+      {/* Scene background & environment */}
+      <color attach="background" args={[ '#f5f0e1' ]} />
+      <fog attach="fog" args={[ '#f5f0e1', 5, 15 ]} />
+      <Environment preset="sunset" background={false} />
+      
+      {/* Lights */}
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[5, 10, 5]} intensity={1.2} castShadow />
+      
+      {/* Soft contact shadows under objects */}
+      <ContactShadows position={[0, -0.01, 0]} opacity={0.6} width={10} height={10} blur={1} far={5} />
+
+      {eggData.map((egg, i) => (
+        <Egg
+          key={i}
+          color={egg.color}
+          position={positions[i]}
+          onCrack={() => handleCrack(i)}
+          isSelected={selectedEgg === i}
+        />
+      ))}
+
+      {dropped.map((i) => (
+        <Droplet key={i} position={positions[i]} />
+      ))}
+
+      {/* Ground plane */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[20, 20]} />
+        <meshStandardMaterial color="black" transparent opacity={0.2} />
+      </mesh>
+
+      <OrbitControls
+        enablePan={false}
+        enableZoom={false}
+        // lock vertical rotation to horizontal plane
+        minPolarAngle={Math.PI / 2}
+        maxPolarAngle={Math.PI / 2}
+      />
+    </>
+  );
+}
+
 export default function App() {
   // Track which eggs have been cracked
   const [dropped, setDropped] = useState<number[]>([]);
   // Currently selected egg for dialog
   const [selectedEgg, setSelectedEgg] = useState<number | null>(null);
-  // Ref to manage auto-hide timer
-  const selectionTimeout = useRef<number | null>(null);
   // Zoom level controlled by horizontal scroll
   const [zoom, setZoom] = useState(1);
   useEffect(() => {
@@ -137,77 +234,31 @@ export default function App() {
   // Precompute positions on a circle
   const positions = useMemo<Vec3[]>(() => {
     const radius = 3;
-    const yOffset = 1.5; // Raise the eggs vertically
+    const yOffset = 1.0;
     const step = (2 * Math.PI) / eggData.length;
     return eggData.map((_, i) => [radius * Math.cos(i * step), yOffset, radius * Math.sin(i * step)]);
   }, []);
 
-  const handleCrack = (i: number) => {
-    // drop egg once
-    if (!dropped.includes(i)) {
-      setDropped([...dropped, i]);
-    }
-    // show selection drawer
-    setSelectedEgg(i);
-    // reset existing timer
-    if (selectionTimeout.current) {
-      clearTimeout(selectionTimeout.current);
-    }
-    // hide after 3s
-    selectionTimeout.current = window.setTimeout(() => setSelectedEgg(null), 3000);
-  };
-
   return (
     <div className="canvas-container">
       {/* Persistent game title */}
-      <div className="game-title">Margučių lenktynės pas Bukšnius '25</div>
+      <div className="game-title">Margučių lenktynės pas Glinskus '25</div>
       <Canvas
         shadows
         dpr={[1, window.devicePixelRatio]}
-        gl={{ antialias: true }}
+        gl={{ antialias: true }}  
         style={{ touchAction: 'none' }}
         camera={{ position: [0, 5, 10], fov: 50 }}
       >
-        {/* Scene background & environment */}
-        <color attach="background" args={[ '#f5f0e1' ]} />
-        <fog attach="fog" args={[ '#f5f0e1', 5, 15 ]} />
-        <Environment preset="sunset" background={false} />
-        
-        {/* Lights */}
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 10, 5]} intensity={1.2} castShadow />
-        
-        {/* Soft contact shadows under objects */}
-        <ContactShadows position={[0, -0.01, 0]} opacity={0.6} width={10} height={10} blur={1} far={5} />
-
-        {eggData.map((egg, i) => (
-          <Egg
-            key={i}
-            color={egg.color}
-            position={positions[i]}
-            onCrack={() => handleCrack(i)}
-            isSelected={selectedEgg === i}
-          />
-        ))}
-
-        {dropped.map((i) => (
-          <Droplet key={i} position={positions[i]} />
-        ))}
-
-        {/* Ground plane */}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-          <planeGeometry args={[20, 20]} />
-          <meshStandardMaterial color="black" transparent opacity={0.2} />
-        </mesh>
-
-        <OrbitControls
-          enablePan={false}
-          enableZoom={false}
-          // lock vertical rotation to horizontal plane
-          minPolarAngle={Math.PI / 2}
-          maxPolarAngle={Math.PI / 2}
+        {/* Pass state and setters to the new scene component */}
+        <EggScene 
+          positions={positions}
+          dropped={dropped}
+          setDropped={setDropped}
+          selectedEgg={selectedEgg}
+          setSelectedEgg={setSelectedEgg}
         />
-
+        
         {/* Zoom camera based on scroll */}
         <ZoomController zoom={zoom} />
       </Canvas>
